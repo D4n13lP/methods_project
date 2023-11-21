@@ -8,8 +8,13 @@ public class Jacobi {
         double [] elementos=new double[4];
         double [][] matriz = new double[4][5];
         double [] x=new double[4]; // vector para almacenar las soluciones
-        double Ea=0.00001;
-        int n=1;
+        double Ea=0.00001; // error absoluto relativo máximo deseado
+        int n=1; // contador de iteraciones
+        int maxIter = 100; // número máximo de iteraciones permitidas
+
+        JOptionPane.showMessageDialog(null, "Jacobi (Metodo Iterativo)\n" + //
+                "Se utiliza para resolver sistemas de ecuaciones lineales, pero actualizando todas las variables simultáneamente en cada iteración.\n" + //
+                "", "Descripcion", 1);
 
         // Pedir el número de ecuaciones
         int nEcuaciones = Integer.parseInt(JOptionPane.showInputDialog("Ingresa el número de ecuaciones"));
@@ -37,26 +42,34 @@ public class Jacobi {
             elementos[i]=Double.parseDouble(JOptionPane.showInputDialog("Ingresa el valor inicial de x"+i+""));
         }
 
-        System.out.println("");
-        System.out.print("los valores iniciales de x son: \n");
+        // Crear una variable para almacenar el resultado
+        String resultado = "";
+
+        resultado += "\nlos valores iniciales de x son: \n";
 
         for(int i=0; i<nEcuaciones; i++){
-            System.out.print(elementos[i]+"\t");
+            resultado += elementos[i]+"\t";
         }
 
-        System.out.println("");
+        resultado += "\n";
         double [] x_old; // declarar la variable x_old
+        double err; // declarar la variable para el error absoluto relativo máximo
         do{
             x_old = elementos.clone(); // copiar los valores anteriores de x
             for (int i = 0; i < nEcuaciones; i++) {
                 x[i] = (matriz[i][nEcuaciones] - sum(matriz[i], x_old, i))/matriz[i][i]; // calcular la nueva solución
-                System.out.print("X"+(i+1)+"="+d.format(x[i])+ "\t");
+                resultado += "X"+(i+1)+" = "+d.format(x[i])+ ";\t ";
             }
-            System.out.println("");
+            resultado += "\n";
             n++;
             elementos = x.clone(); // actualizar los valores de x
-        }while(error(x, x_old) > Ea && n < 50); // verificar la condición de parada
+            err = error(x, x_old); // calcular el error absoluto relativo máximo
+            resultado += "Iteración: "+n+", Error: "+d.format(err)+"\n"; // mostrar el número de iteración y el error
+        }while(err > Ea && n < maxIter); // verificar la condición de parada
 
+        // Mostrar el resultado en una ventana de JOptionPane
+        resultado += "El método ha terminado\n"; // mostrar el mensaje final
+        JOptionPane.showMessageDialog(null, resultado);
     }
 
     // método para calcular la suma de los productos de los coeficientes y las soluciones

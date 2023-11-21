@@ -1,86 +1,126 @@
-
-import java.util.Scanner;
+//package biblioteca;
+import javax.swing.JOptionPane;
 
 public class Crout {
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Ingrese los coeficientes del sistema de ecuaciones 3x3:");
-        double[][] sistemaEcuaciones = new double[3][4];
+        JOptionPane.showMessageDialog(null, "Crout (Metodo Directo)\n" + //
+                "Utilizado para la descomposición LU, que es una forma de factorización de una matriz en el producto de una matriz triangular inferior (L) y una matriz triangular superior (U).", "Descripcion", 1);
+        int n = Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de ecuaciones en el sistema:"));
+        JOptionPane.showMessageDialog(null, "Ingrese los coeficientes y el término constante para cada ecuación.");
 
-        // Entrada de coeficientes
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print("Coeficiente en la posición [" + i + "][" + j + "]: ");
-                sistemaEcuaciones[i][j] = scanner.nextDouble();
+        double[][] matriz = new double[n][n];
+        double[] b = new double[n];
+
+        // Ingresar los coeficientes de la matriz y el término constante
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matriz[i][j] = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el coeficiente para x" + (j + 1) + " de la ecuación " + (i + 1) + ":"));
             }
+            b[i] = Double.parseDouble(JOptionPane.showInputDialog("Ingrese el término constante para la ecuación " + (i + 1) + ":"));
         }
 
-        // Resolución mediante el método de Crout
-        double[][] resultado = resolverSistemaCrout(sistemaEcuaciones);
+        double[] resultados = resolverSistema(matriz, b);
 
-        // Imprimir el resultado
-        System.out.println("Solución del sistema de ecuaciones:");
-        for (int i = 0; i < 3; i++) {
-            System.out.println("x" + (i + 1) + " = " + resultado[i][3]);
+        StringBuilder resultadosStr = new StringBuilder("Resultados:\n");
+        for (int i = 0; i < resultados.length; i++) {
+            resultadosStr.append(String.format("x%d = %.4f%n", i + 1, resultados[i]));
         }
-
-        scanner.close();
+        JOptionPane.showMessageDialog(null, resultadosStr.toString());
     }
 
-    private static double[][] resolverSistemaCrout(double[][] sistemaEcuaciones) {
-        int n = 3; // Tamaño de la matriz
+    public static double[] resolverSistema(double[][] matriz, double[] b) {
+        int n = b.length;
 
-        double[][] L = new double[n][n];
-        double[][] U = new double[n][n];
+        double[][] L = new double[n][n]; // Matriz triangular inferior
+        double[][] U = new double[n][n]; // Matriz triangular superior
 
-        // Inicializar matrices L y U
+        // Inicialización de matrices L y U
         for (int i = 0; i < n; i++) {
-            L[i][i] = 1; // Los elementos diagonales de L son 1
-            for (int j = 0; j < n; j++) {
-                U[i][j] = 0;
-            }
+            U[i][i] = 1; // Diagonal de U es 1
         }
 
-        // Descomposición LU
-        for (int k = 0; k < n; k++) {
-            for (int i = k; i < n; i++) {
+        // Algoritmo Crout para factorización LU
+        for (int i = 0; i < n; i++) {
+            // Calculando la matriz U
+            for (int k = i; k < n; k++) {
                 double sum = 0;
-                for (int p = 0; p < k; p++) {
-                    sum += L[i][p] * U[p][k];
+                for (int j = 0; j < i; j++) {
+                    sum += L[i][j] * U[j][k];
                 }
-                L[i][k] = sistemaEcuaciones[i][k] - sum;
+                U[i][k] = matriz[i][k] - sum;
             }
 
-            for (int j = k + 1; j < n; j++) {
-                double sum = 0;
-                for (int p = 0; p < k; p++) {
-                    sum += L[k][p] * U[p][j];
+            // Calculando la matriz L
+            for (int k = i; k < n; k++) {
+                if (i == k) {
+                    L[i][i] = 1; // Diagonal de L es 1
+                } else {
+                    double sum = 0;
+                    for (int j = 0; j < i; j++) {
+                        sum += L[k][j] * U[j][i];
+                    }
+                    L[k][i] = (matriz[k][i] - sum) / U[i][i];
                 }
-                U[k][j] = (sistemaEcuaciones[k][j] - sum) / L[k][k];
             }
+
+            // Mostrar la matriz L en una ventana
+            StringBuilder matrizLStr = new StringBuilder("Matriz L (Iteración ").append(i + 1).append("):\n");
+            for (int l = 0; l < n; l++) {
+                for (int m = 0; m < n; m++) {
+                    matrizLStr.append(String.format("%.4f \t", L[l][m]));
+                }
+                matrizLStr.append("\n ");
+            }
+            JOptionPane.showMessageDialog(null, matrizLStr.toString(), "Matriz L (Iteración " + (i + 1) + ")", JOptionPane.INFORMATION_MESSAGE);
+
+            // Mostrar la matriz U en una ventana
+            double[][] matrizU = obtenerMatrizU(U);
+            StringBuilder matrizUStr = new StringBuilder("Matriz U (Iteración ").append(i + 1).append("):\n");
+            for (int l = 0; l < n; l++) {
+                for (int m = 0; m < n; m++) {
+                    matrizUStr.append(String.format("%.4f \t", matrizU[l][m]));
+                }
+                matrizUStr.append("\n ");
+            }
+            JOptionPane.showMessageDialog(null, matrizUStr.toString(), "Matriz U (Iteración " + (i + 1) + ")", JOptionPane.INFORMATION_MESSAGE);
         }
 
-        // Resolver LY = B (donde Y es un vector columna)
-        double[] Y = new double[n];
+        // Resolver Ly = b usando sustitución hacia adelante
+        double[] y = new double[n];
         for (int i = 0; i < n; i++) {
             double sum = 0;
             for (int j = 0; j < i; j++) {
-                sum += L[i][j] * Y[j];
+                sum += L[i][j] * y[j];
             }
-            Y[i] = (sistemaEcuaciones[i][3] - sum) / L[i][i];
+            y[i] = (b[i] - sum) / L[i][i];
         }
 
-        // Resolver UX = Y
-        double[][] resultado = new double[n][4];
+        // Resolver Ux = y usando sustitución hacia atrás
+        double[] x = new double[n];
         for (int i = n - 1; i >= 0; i--) {
             double sum = 0;
             for (int j = i + 1; j < n; j++) {
-                sum += U[i][j] * resultado[j][3];
+                sum += U[i][j] * x[j];
             }
-            resultado[i][3] = (Y[i] - sum) / U[i][i];
+            x[i] = (y[i] - sum) / U[i][i];
         }
 
-        return resultado;
+        return x;
+    }
+
+    public static double[][] obtenerMatrizU(double[][] matriz) {
+        int n = matriz.length;
+        double[][] U = new double[n][n];
+
+        // Copiar elementos de la matriz original a la matriz U
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                U[i][j] = matriz[i][j];
+            }
+        }
+
+        return U;
     }
 }

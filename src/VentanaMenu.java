@@ -1,11 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+
 
 public class VentanaMenu extends JFrame implements ActionListener {
 
     private JButton botonFalsaPosicion, botonNewton, botonSecante, botonGauss, botonJacobi, botonGaussS, botonCrout; //botones del menú
-    private VentanaOperacion ventanaOperacion; //ventana para realizar la operación
 
     public VentanaMenu() {
         super("Metodos Numericos"); //título de la ventana
@@ -16,12 +19,28 @@ public class VentanaMenu extends JFrame implements ActionListener {
 
         //crear los botones del menú
         botonFalsaPosicion = new JButton("Falsa Posicion");
+        botonFalsaPosicion.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonFalsaPosicion.setForeground(new Color(128, 0, 128));
         botonNewton = new JButton("Newton");
+        botonNewton.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonNewton.setForeground(new Color(128, 0, 128));
         botonSecante = new JButton("Secante");
+        botonSecante.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonSecante.setForeground(new Color(128, 0, 128));
         botonGauss = new JButton("Gauss");
+        botonGauss.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonGauss.setForeground(new Color(128, 0, 128));
         botonJacobi = new JButton("Jacobi");
+        botonJacobi.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonJacobi.setForeground(new Color(128, 0, 128));
         botonGaussS = new JButton("Gauss-Seidel");
+        botonGaussS.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonGaussS.setForeground(new Color(128, 0, 128));
+        //botonGaussS.setBackground(new Color(173, 216, 230));
+        botonGaussS.setOpaque(true);
         botonCrout = new JButton("Crout");
+        botonCrout.setFont(new Font("Arial", Font.PLAIN, 20));
+        botonCrout.setForeground(new Color(128, 0, 128));
         //agregar los botones a la ventana
         add(botonFalsaPosicion);
         add(botonNewton);
@@ -47,97 +66,67 @@ public class VentanaMenu extends JFrame implements ActionListener {
         JButton boton = (JButton) e.getSource();
         //obtener el texto del botón
         String texto = boton.getText();
-        //crear una nueva ventana de operación con el texto del botón
-        ventanaOperacion = new VentanaOperacion(texto, this);
-        //mostrar la ventana de operación
-        ventanaOperacion.setVisible(true);
-        //ocultar la ventana del menú
-        this.setVisible(false);
+        //si el botón es Gauss
+        if (texto.equals("Gauss")) {
+            //crear una instancia de la clase Gauss
+            Gauss gauss = new Gauss();
+            //llamar al método main de la clase Gauss con el argumento null
+            gauss.main(null);
+        }
+        //si el botón es Falsa Posición
+        if (texto.equals("Falsa Posicion")) {
+            //crear una instancia de la clase FalsaPosicion
+            FalsaPosicion fp = new FalsaPosicion();
+            //llamar al método main de la clase FalsaPosicion con el argumento null
+            fp.main(null);
+        }
+        //si el botón es Newton
+        if (texto.equals("Newton")) {
+            //crear una instancia de la clase Newton
+            Newton fp = new Newton();
+            //llamar al método main de la clase Newton con el argumento null
+            fp.main(null);
+        }
+        //si el botón es Secante
+        if (texto.equals("Secante")) {
+            //crear una instancia de la clase Secante
+            Secante fp = new Secante();
+            //llamar al método main de la clase Secante con el argumento null
+            fp.main(null);
+        }
+        //si el botón es Jacobi
+        if (texto.equals("Jacobi")) {
+            //crear una instancia de la clase Jacobi
+            Jacobi fp = new Jacobi();
+            //llamar al método main de la clase Jacobi con el argumento null
+            fp.main(null);
+        }
+        //si el botón es Gauss-Seidel
+        if (texto.equals("Gauss-Seidel")) {
+            //crear una instancia de la clase Gauss-Seidel
+            GaussSeidel fp = new GaussSeidel();
+            //llamar al método main de la clase Gauss-Seidel con el argumento null
+            fp.main(null);
+        }
+        //si el botón es Crout
+        if (texto.equals("Crout")) {
+            //crear una instancia de la clase Crout
+            Crout fp = new Crout();
+            //llamar al método main de la clase Crout con el argumento null
+            fp.main(null);
+        }
     }
 
     //método principal para ejecutar el programa
     public static void main(String[] args) {
+
+        //Portada p = new Portada();
+        //p.setVisible(true);
         //crear una instancia de la clase VentanaMenu y mostrarla
+        VentanaMenu menu = new VentanaMenu();
+        
         VentanaMenu vm = new VentanaMenu();
+        Portada portada = new Portada(menu);
         vm.setVisible(true);
-    }
-}
-// Esta parte del codigo despliega la  ventana con los campos que contiene cada boton 
-class VentanaOperacion extends JFrame implements ActionListener {
-
-    private JTextField campo1, campo2, campo3; //campos de texto para los operandos y el resultado
-    private JButton botonOperar, botonVolver; //botones para realizar la operación y volver al menú
-    private String operacion; //operación a realizar
-    private VentanaMenu ventanaMenu; //ventana del menú principal
-
-    public VentanaOperacion(String operacion, VentanaMenu ventanaMenu) {
-        super("Ventana de " + operacion); //título de la ventana
-        setSize(300, 200); //tamaño de la ventana
-        setLocationRelativeTo(null); //centrar la ventana
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //cerrar el programa al cerrar la ventana
-        setLayout(new GridLayout(5, 1)); //usar un layout de rejilla de 5 filas y 1 columna
-
-        //asignar el valor de los parámetros a los atributos
-        this.operacion = operacion;
-        this.ventanaMenu = ventanaMenu;
-
-        //crear los campos de texto y los botones
-        campo1 = new JTextField();
-        campo2 = new JTextField();
-        campo3 = new JTextField();
-        campo3.setEditable(false); //el tercer campo no se puede editar
-        botonOperar = new JButton(operacion);
-        botonVolver = new JButton("Volver al menú");
-
-        //agregar los componentes a la ventana
-        add(campo1);
-        add(campo2);
-        add(campo3);
-        add(botonOperar);
-        add(botonVolver);
-
-        //agregar un escuchador de acción a cada botón
-        botonOperar.addActionListener(this);
-        botonVolver.addActionListener(this);
-    }
-
-    //método que se ejecuta al pulsar un botón
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        //obtener el botón que ha generado el evento
-        JButton boton = (JButton) e.getSource();
-        //obtener el texto del botón
-        String texto = boton.getText();
-        //si el texto es igual al de la operación
-        if (texto.equals(operacion)) {
-            try {
-                //obtener los números de los campos de texto y convertirlos a enteros
-                int num1 = Integer.parseInt(campo1.getText());
-                int num2 = Integer.parseInt(campo2.getText());
-                int resultado = 0; //variable para almacenar el resultado
-                //si la operación es sumar
-                if (operacion.equals("Falsa Posicion")) {
-                    //calcular la suma de los números
-                    resultado = num1 + num2;
-                }
-                //si la operación es multiplicar
-                else if (operacion.equals("Newton")) {
-                    //calcular el producto de los números
-                    resultado = num1 * num2;
-                }
-                //mostrar el resultado en el tercer campo de texto
-                campo3.setText(String.valueOf(resultado));
-            } catch (NumberFormatException ex) {
-                //si hay algún error al convertir los números, mostrar un mensaje de error
-                JOptionPane.showMessageDialog(this, "Datos inválidos", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        //si el texto es volver al menú
-        else if (texto.equals("Volver al menú")) {
-            //mostrar la ventana del menú
-            ventanaMenu.setVisible(true);
-            //ocultar la ventana de operación
-            this.setVisible(false);
-        }
     }
 }

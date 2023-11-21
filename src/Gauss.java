@@ -1,19 +1,28 @@
-import java.util.Scanner;
+import javax.swing.*;
 
 public class Gauss {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Introduce el número de ecuaciones:");
-        int m = scanner.nextInt();
-        System.out.println("Introduce el número de incógnitas:");
-        int n = scanner.nextInt();
+
+        JOptionPane.showMessageDialog(null, "Gauss (Metodo Directo)\n" + //
+                "Utilizado para la eliminación de Gauss, que resuelve sistemas de ecuaciones lineales mediante operaciones de fila en una matriz aumentada.\n" + //
+                "", "Descripcion", 1);
+        //pedir al usuario que introduzca el número de ecuaciones
+        String input = JOptionPane.showInputDialog(null, "Introduce el número de ecuaciones:");
+        //convertir el input a un número entero
+        int m = Integer.parseInt(input);
+        //pedir al usuario que introduzca el número de incógnitas
+        input = JOptionPane.showInputDialog(null, "Introduce el número de incógnitas:");
+        //convertir el input a un número entero
+        int n = Integer.parseInt(input);
         double[][] matriz = new double[m][n+1];
         double[] solucion = new double[n];
 
-        System.out.println("Introduce los coeficientes de las ecuaciones y los términos independientes:");
+        //pedir al usuario que introduzca los coeficientes de las ecuaciones y los términos independientes
         for (int i = 0; i < m; i++) {
             for (int j = 0; j <= n; j++) {
-                matriz[i][j] = scanner.nextDouble();
+                input = JOptionPane.showInputDialog(null, "Introduce el coeficiente de la fila " + (i+1) + " y la columna " + (j+1) + ":");
+                //convertir el input a un número real
+                matriz[i][j] = Double.parseDouble(input);
             }
         }
 
@@ -28,13 +37,16 @@ public class Gauss {
             }
         }
 
-        System.out.println("La matriz escalonada es:");
+        //crear una variable para almacenar la matriz escalonada como una cadena
+        String escalonada = "La matriz escalonada es:\n";
         for (int i = 0; i < m; i++) {
             for (int j = 0; j <= n; j++) {
-                System.out.print(matriz[i][j] + " ");
+                escalonada += matriz[i][j] + " ";
             }
-            System.out.println();
+            escalonada += "\n";
         }
+        //mostrar la matriz escalonada por una ventana
+        JOptionPane.showMessageDialog(null, escalonada);
 
         for (int i = Math.min(m, n)-1; i >= 0; i--) {
             double suma = 0;
@@ -44,10 +56,12 @@ public class Gauss {
             solucion[i] = (matriz[i][n] - suma) / matriz[i][i];
         }
 
-        System.out.println("La solución es:");
+        //crear una variable para almacenar la solución como una cadena
+        String solucionStr = "La solución es:\n";
         for (int i = 0; i < n; i++) {
-            System.out.println("x" + (i+1) + " = " + solucion[i]);
+            solucionStr += "x" + (i+1) + " = " + solucion[i] + "\n";
         }
+        //mostrar la solución por una ventana
+        JOptionPane.showMessageDialog(null, solucionStr);
     }
 }
-
